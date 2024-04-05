@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- ROBOT'S FLANGE TO RIGHT CAMERA TRANSFORM -->
+  <node pkg="tf" type="static_transform_publisher" name="flange2rightcamera" args="-0.021 0.15 0.000 -0.5 -0.5 0.5 0.5 /right_camera /flange 1"/>
+  <!-- ROBOT'S FLANGE TO RIGHT CAMERA TRANSFORM -->
+  <node pkg="tf" type="static_transform_publisher" name="flange2leftcamera" args="0.021 0.15 0.000 0.5 0.5 0.5 0.5  /left_camera /flange 1"/>
+
+  <!-- DUAL-HEMISPHERICAL PHOTOMETRIC VISUAL SERVOING-->
+  <arg name="verbose" value="1"/>
+  <arg name="gain" value="0.9"/>
+  <arg name="Z" value="1.0"/>
+
+  <node pkg="DHPVS" type="DHPVS" name="DHPVS_node" output="screen" respawn="false">
+    <remap from="/dhpvs/right_camera/camera_info" to="/insta360/right/camera_info"/>
+    <remap from="/dhpvs/left_camera/camera_info"  to="/insta360/left/camera_info"/>
+    <remap from="/dhpvs/right_camera/image_raw"   to="/insta360/right/image_raw"/>
+    <remap from="/dhpvs/left_camera/image_raw"    to="/insta360/left/image_raw"/>
+    <remap from="/dhpvs/robot/get_pose"           to="/camera_link_controller/pose"/>
+    <remap from="/dhpvs/robot/set_velocity"       to="/twist_controller/command"/>
+
+    <param name="gain" value="$(arg gain)"/>
+    <param name="verbose" value="$(arg verbose)"/>
+    <param name="Z" value="$(arg Z)"/>
+
+    <param name="controlInBaseFrame" type="bool" value="true"/>
+    <param name="cameraPoseTopic" type="string" value="/tf"/>
+  </node>
+
+</launch>
